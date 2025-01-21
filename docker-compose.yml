@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  fpm:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-php
+    volumes:
+      - ./:/var/www/project/:cached
+    networks:
+      - app-docker
+
+  nginx:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-nginx
+    volumes:
+      - ./:/var/www/project/:cached
+    ports:
+      - 10234:80
+    networks:
+      - app-docker
+
+  db:
+    image: mysql
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: app-docker
+
+    networks:
+      - app-docker
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - app-docker
+
+networks:
+  app-docker:
+
+volumes:
+  db-data:
