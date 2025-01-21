@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile-php
     volumes:
       - ./:/var/www/project/:cached
+      - ./uploads:/var/www/project/public/uploads:cached
     networks:
       - app-docker
 
@@ -16,6 +17,7 @@ services:
       dockerfile: Dockerfile-nginx
     volumes:
       - ./:/var/www/project/:cached
+      - ./uploads:/var/www/project/public/uploads:cached
     ports:
       - 10234:80
     networks:
@@ -31,7 +33,6 @@ services:
       MYSQL_PASSWORD: app
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: app-docker
-
     networks:
       - app-docker
 

@@ -1,4 +1,6 @@
 FROM php:8.2-fpm
+
+# Installer les dépendances nécessaires
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         zlib1g-dev \
@@ -16,7 +18,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         zip \
         opcache \
         gd \
-        intl
+        intl \
+        exif \
+    && docker-php-ext-enable exif
 
 COPY build/php/opcache.ini /usr/local/etc/php/conf.d/
 COPY build/php/custom.ini /usr/local/etc/php/conf.d/
@@ -35,5 +39,10 @@ RUN mkdir -p /var/www
 RUN chown -R www-data:www-data /var/www
 RUN mkdir -p /var/www/.composer
 RUN chown -R www-data:www-data /var/www/.composer
+
+RUN mkdir -p /var/www/project/public/uploads && \
+    chown -R www-data:www-data /var/www/project/public/uploads
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/project/

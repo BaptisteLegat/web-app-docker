@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Images de la galerie{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue dans la galerie d'images!</h1>
+    <p>
+        Vous pouvez ajouter des images à la galerie en complétant le formulaire ci-dessous. Vous pouvez également voir les images ajoutées par les autres utilisateurs et les aimer.
+    </p>
+    <h2>Ajouter une image</h2>
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.picture) }}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    {{ form_end(form) }}
+
+    <h2>Images de la galerie</h2>
+    <div class="row">
+        {% for picture in pictures %}
+            <div class="col-4">
+                <div class="card mb-4">
+                    <img src="{{ asset('uploads/' ~ picture.filename) }}" class="card-img-top" alt="{{ picture.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title mb-0">{{ picture.title }}</h5>
+                        <p class="card-text">{{ picture.description }}</p>
+                        
+                        {% if app.user %}
+                            {% set userLiked = picture.users|filter(pu => pu.user == app.user and pu.isLiked)|length > 0 %}
+                            <form action="{{ path('app_picture_like', { id: picture.id }) }}" method="post" class="mt-2">
+                                <input type="hidden" name="_token" value="{{ csrf_token('like' ~ picture.id) }}">
+                                <button type="submit" class="btn btn-{{ userLiked ? 'secondary' : 'success' }}">
+                                    {{ userLiked ? 'Unlike' : 'Like' }}
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-center">Aucune image n'a été ajoutée pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    {% if app.user %}
+        <a href="{{ path('app_logout') }}">Déconnexion</a>
+    {% endif %}
+{% endblock %}
