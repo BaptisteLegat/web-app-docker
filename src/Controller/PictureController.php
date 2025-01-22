@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Picture;
-use App\Entity\PictureUser;
 use App\Form\PictureType;
 use App\Picture\PictureMapper;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +20,9 @@ class PictureController extends AbstractController
         EntityManagerInterface $em,
         PictureMapper $pictureMapper
     ): Response {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
         $pictures = $em->getRepository(Picture::class)->findAll();
 
         $picture = new Picture();
@@ -33,15 +34,12 @@ class PictureController extends AbstractController
             $formData = $form->getData();
 
             try {
-                $picture = $pictureMapper->mapToPicture($picture, $uploadedFile, [
+                $pictureMapper->mapToPicture($picture, $uploadedFile, [
                     'title' => $formData->getTitle(),
                     'description' => $formData->getDescription(),
                 ]);
 
-                $em->persist($picture);
-                $em->flush();
-
-                $this->addFlash('success', 'Image uploadée avec succès.');
+                $this->addFlash('success', 'Image ajoutée.');
             } catch (Exception $e) {
                 $this->addFlash('danger', $e->getMessage());
             }
@@ -56,34 +54,28 @@ class PictureController extends AbstractController
     }
 
     #[Route('/picture/{id}/like', name: 'app_picture_like', methods: ['POST'])]
-    public function toggleLike(int $id, EntityManagerInterface $em): Response
-    {
+    public function toggleLike(
+        int $id,
+        EntityManagerInterface $em,
+        PictureMapper $pictureMapper
+    ): Response {
         $user = $this->getUser();
-        $picture = $em->getRepository(Picture::class)->find($id);
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
 
+        $picture = $em->getRepository(Picture::class)->find($id);
         if (!$picture) {
             throw $this->createNotFoundException('Image non trouvée.');
         }
 
-        $pictureUser = $em->getRepository(PictureUser::class)->findOneBy([
-            'picture' => $picture,
-            'user' => $user,
-        ]);
+        try {
+            $pictureMapper->mapToPictureUser($picture, $user);
 
-        if ($pictureUser) {
-            $isLiked = $pictureUser->isLiked();
-            $pictureUser->setIsLiked(!$isLiked);
-        } else {
-            $pictureUser = new PictureUser();
-            $pictureUser->setPicture($picture);
-            $pictureUser->setUser($user);
-            $pictureUser->setIsLiked(true);
-            $pictureUser->setCreatedAt(new DateTimeImmutable());
-
-            $em->persist($pictureUser);
+            $this->addFlash('success', 'Vous avez liké une image.');
+        } catch (Exception $e) {
+            $this->addFlash('danger', 'Une erreur est survenue.');
         }
-
-        $em->flush();
 
         return $this->redirectToRoute('app_picture');
     }

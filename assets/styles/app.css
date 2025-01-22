@@ -1,3 +1,27 @@
 body {
-    background-color: skyblue;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+h1 {
+    margin-bottom: 20px;
+}
+
+.like-button {
+    font-size: 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.like-button:hover {
+    transform: scale(1.2);
+}
+.bi-heart-fill {
+    transition: color 0.2s, transform 0.2s;
+}
+.bi-heart {
+    transition: color 0.2s, transform 0.2s;
 }

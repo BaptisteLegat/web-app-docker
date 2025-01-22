@@ -3,14 +3,18 @@
 {% block title %}Bienvenue sur le projet!{% endblock %}
 
 {% block body %}
-    <h1>Bienvenue sur le projet!</h1>
-    <p>
-        Ceci est la page d'accueil du projet. Vous pouvez accéder à la page de connexion  en cliquant sur le lien ci-dessous. Si vous n'avez pas de compte, vous pouvez vous inscrire en cliquant sur le lien d'inscription.
-    </p>
-    {% if app.user %}
-        <a href="{{ path('app_logout') }}">Déconnexion</a>
-    {% else %}
-        <a href="{{ path('app_login') }}">Connexion</a>
-        <a href="{{ path('app_register') }}">Inscription</a>
-    {% endif %}
+    <div class="text-center">
+        <h1 class="display-4">Bienvenue sur le projet!</h1>
+        <p class="lead">
+            Ceci est la page d'accueil du projet. Vous pouvez accéder à la page de connexion en cliquant sur le lien ci-dessous. Si vous n'avez pas de compte, vous pouvez vous inscrire en cliquant sur le lien d'inscription.
+        </p>
+        <div>
+            {% if app.user %}
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">Déconnexion</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-primary me-2">Connexion</a>
+                <a href="{{ path('app_register') }}" class="btn btn-secondary">Inscription</a>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,15 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}S'Inscrire{% endblock %}
+{% block title %}S'inscrire{% endblock %}
 
 {% block body %}
-    <h1>Inscription</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="h3 mb-3 text-center">Inscription</h1>
+            <form method="post" class="p-4 border rounded bg-white shadow-sm">
+                {{ form_start(registrationForm) }}
+                    <div class="mb-3">
+                        {{ form_row(registrationForm.email, {'label': 'Adresse email', 'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(registrationForm.username, {'label': 'Nom d\'utilisateur', 'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.password.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="input-group">
+                            {{ form_widget(registrationForm.password.first, {'attr': {'class': 'form-control'}}) }}
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword1">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.password.second, 'Confirmez le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="input-group">
+                            {{ form_widget(registrationForm.password.second, {'attr': {'class': 'form-control', 'id': 'inputPassword2'}}) }}
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                {{ form_end(registrationForm) }}
+            </form>
+        </div>
+    </div>
+{% endblock %}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email, {'label': 'Adresse email'}) }}
-        {{ form_row(registrationForm.username, {'label': 'Username'}) }}
-        {{ form_row(registrationForm.password.first, {'label': 'Mot de passe'}) }}
-        {{ form_row(registrationForm.password.second, {'label': 'Confirmez le mot de passe'}) }}
-    <button type="submit">S'inscrire</button>
-    {{ form_end(registrationForm) }}
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePassword1 = document.getElementById('togglePassword1');
+            const passwordInput1 = document.getElementById('registration_form_password_first');
+            const icon1 = togglePassword1.querySelector('i');
+
+            if (togglePassword1 && passwordInput1) {
+                togglePassword1.addEventListener('click', () => {
+                    const type = passwordInput1.type === 'password' ? 'text' : 'password';
+                    passwordInput1.type = type;
+                });
+            }
+
+            const togglePassword2 = document.getElementById('togglePassword2');
+            const passwordInput2 = document.getElementById('registration_form_password_second');
+            const icon2 = togglePassword2.querySelector('i');
+
+            if (togglePassword2 && passwordInput2) {
+                togglePassword2.addEventListener('click', () => {
+                    const type = passwordInput2.type === 'password' ? 'text' : 'password';
+                    passwordInput2.type = type;
+                });
+            }
+        });
+    </script>
 {% endblock %}

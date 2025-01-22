@@ -3,35 +3,60 @@
 {% block title %}Se connecter{% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="h3 mb-3 text-center">Merci de vous connecter</h1>
+            <form method="post" class="p-4 border rounded bg-white shadow-sm">
+                {% if error %}
+                    <div class="alert alert-danger">Les informations de connexion sont incorrectes, veuillez réessayer.</div>
+                {% endif %}
 
-        {% if app.user %}
-            <div class="mb-3">
-                Vous êtes connecter en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Se déconnecter</a>
-            </div>
-        {% endif %}
-
-        <h1 class="h3 mb-3 font-weight-normal">Merci de vous connecter</h1>
-        <label for="inputEmail">Email</label>
-        <input type="email" value="{{ username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-        <label for="inputPassword">Password</label>
-        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-        <input type="hidden" name="_csrf_token"
-            value="{{ csrf_token('authenticate') }}"
-        >
-
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" name="_remember_me"> Se souvenir de moi </input>
-            </label>
+                {% if app.user %}
+                    <div class="mb-3">
+                        Vous êtes connecté en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Se déconnecter</a>.
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label for="inputEmail" class="form-label">Email</label>
+                    <input type="email" value="{{ username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                </div>
+               <div class="mb-3">
+                    <label for="inputPassword" class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="_remember_me" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Se connecter</button>
+                <p class="mt-3 text-center">Pas encore de compte ? <a href="{{ path('app_register') }}">Inscrivez-vous</a></p>
+            </form>
         </div>
+    </div>
+{% endblock %}
 
-        <button class="btn btn-lg btn-primary" type="submit">
-            Se connecter
-        </button>
-    </form>
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('inputPassword');
+            const icon = togglePassword.querySelector('i');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+
+                    icon.classList.toggle('bi-eye');
+                    icon.classList.toggle('bi-eye-slash');
+                });
+            }
+        });
+    </script>
 {% endblock %}
