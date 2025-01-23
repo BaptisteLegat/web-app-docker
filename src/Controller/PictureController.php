@@ -71,8 +71,6 @@ class PictureController extends AbstractController
 
         try {
             $pictureMapper->mapToPictureUser($picture, $user);
-
-            $this->addFlash('success', 'Vous avez liké une image.');
         } catch (Exception $e) {
             $this->addFlash('danger', 'Une erreur est survenue.');
         }
